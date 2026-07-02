@@ -98,16 +98,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- ✅ Secure Source Code -->
     <div class="code-block">
-      <code><span style="color:#86efac">// ✅ SECURE CODE (PHP)</span>
+      <pre><code><span style="color:#86efac">// ✅ SECURE REQUEST HANDLER (PHP)</span>
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $ip = $_POST['ip'] ?? '';
 
-<span style="color:#86efac">// Step 1: Whitelist — ยอมรับเฉพาะ IP address ที่ถูกต้อง</span>
-$is_valid = filter_var($ip, FILTER_VALIDATE_IP) !== false;
-if (!$is_valid) { die("Invalid IP!"); }
+    if (!empty($ip)) {
+        // ✅ ป้องกันขั้นที่ 1: ตรวจสอบโครงสร้างว่าเป็น IP Address ที่ถูกต้องเท่านั้น (Whitelist)
+        $is_valid_ip = filter_var($ip, FILTER_VALIDATE_IP) !== false;
 
-<span style="color:#86efac">// Step 2: escapeshellarg() — escape special chars ทั้งหมด</span>
-$safe_ip = escapeshellarg($ip);  <span style="color:#86efac">// ห่อด้วย '' และ escape ทุก metachar</span>
-$command = "ping -c 3 " . $safe_ip . " 2>&1";
-$output  = shell_exec($command);</code>
+        if (!$is_valid_ip) {
+            $blocked   = true;
+            $block_msg = "❌ Input ถูก block! ไม่ใช่ IP address ที่ถูกต้อง";
+        } else {
+            // ✅ ป้องกันขั้นที่ 2: ใช้ escapeshellarg ครอบตัวแปรเพื่อไม่ให้รัน shell commands ซ้อนได้
+            $safe_ip = escapeshellarg($ip);
+            $command = "ping -c 3 " . $safe_ip . " 2>&1";
+            $output  = shell_exec($command);
+            
+            if ($output === null) {
+                $error = 'Command execution failed.';
+            }
+        }
+    }
+}</code></pre>
     </div>
 
     <form method="POST" action="/secure.php">

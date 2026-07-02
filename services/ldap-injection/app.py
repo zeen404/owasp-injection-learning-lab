@@ -117,15 +117,30 @@ PAGE = '''<!DOCTYPE html>
 
   <div class="cb">
     {% if mode == 'VULNERABLE' %}
-      <code><span class="hl"># ❌ VULNERABLE CODE</span>
-ldap_filter = f"(&(objectClass=inetOrgPerson)(uid={username}))"
-<span class="hl"># ← ใส่ username ตรงๆ — ถ้าใส่ * ได้ผู้ใช้ทั้งหมด!</span></code>
+      <pre><code><span class="hl"># ❌ VULNERABLE ROUTE FUNCTION</span>
+@app.route("/vulnerable", methods=["GET", "POST"])
+def vulnerable():
+    result, error, username, filter_used = None, None, "", ""
+    if request.method == "POST":
+        username = request.form.get("username", "")
+        if username:
+            # ❌ ป้อนตัวแปร username ลงใน LDAP filter โดยตรง
+            filter_used = f"(&(objectClass=inetOrgPerson)(uid={username}))"
+            result, error = ldap_search(filter_used)
+    return render_template_string(...)</code></pre>
     {% else %}
-      <code><span style="color:#86efac"># ✅ SECURE CODE</span>
-from ldap3.utils.conv import escape_filter_chars
-safe = escape_filter_chars(username)
-ldap_filter = f"(&(objectClass=inetOrgPerson)(uid={safe}))"
-<span style="color:#86efac"># ← escape แล้ว metachar ไม่ทำงาน</span></code>
+      <pre><code><span style="color:#86efac"># ✅ SECURE ROUTE FUNCTION</span>
+@app.route("/secure", methods=["GET", "POST"])
+def secure():
+    result, error, username, filter_used = None, None, "", ""
+    if request.method == "POST":
+        username = request.form.get("username", "")
+        if username:
+            # ✅ ป้องกันโดยใช้ escape_filter_chars เพื่อกรองอักขระพิเศษ LDAP
+            safe_username = escape_filter_chars(username)
+            filter_used   = f"(&(objectClass=inetOrgPerson)(uid={safe_username}))"
+            result, error = ldap_search(filter_used)
+    return render_template_string(...)</code></pre>
     {% endif %}
   </div>
 

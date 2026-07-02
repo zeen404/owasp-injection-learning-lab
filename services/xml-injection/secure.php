@@ -105,17 +105,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </p>
 
   <div class="cb">
-    <code><span style="color:#86efac">// ✅ SECURE CODE (PHP)</span>
+    <pre><code><span style="color:#86efac">// ✅ SECURE REQUEST HANDLER (PHP)</span>
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $xml_in = $_POST['xml_input'] ?? '';
 
-<span style="color:#86efac">// Step 1: ตรวจจับ DOCTYPE และ ENTITY ใน raw input</span>
-if (stripos($xml_in, '&lt;!DOCTYPE') !== false ||
-    stripos($xml_in, '&lt;!ENTITY') !== false) {
-    die("XXE attack detected — DOCTYPE/ENTITY not allowed");
-}
-
-<span style="color:#86efac">// Step 2: parse โดยไม่ใช้ flags อันตราย</span>
-$dom = new DOMDocument();
-$dom->loadXML($xml_in, LIBXML_NOERROR);  <span style="color:#86efac">// ← safe!</span></code>
+    if (!empty($xml_in)) {
+        // ✅ ป้องกันขั้นที่ 1: คัดกรองและสแกนหาคำชี้พิกัดภายนอก DTD/ENTITY ก่อนเข้าตัววิเคราะห์ XML
+        if (stripos($xml_in, '<!DOCTYPE') !== false ||
+            stripos($xml_in, '<!ENTITY') !== false) {
+            $blocked = true;
+        } else {
+            // ✅ ป้องกันขั้นที่ 2: โหลด XML โดยไม่มี Flag เสี่ยง (ปิดใช้งาน DTD และ NOENT)
+            libxml_use_internal_errors(true);
+            $dom = new DOMDocument();
+            $dom->loadXML($xml_in, LIBXML_NOERROR);
+            
+            $errors = libxml_get_errors();
+            libxml_clear_errors();
+            
+            if (!empty($errors)) {
+                $error = 'XML Parse Error: ' . $errors[0]->message;
+            } else {
+                $output = $dom->saveXML();
+            }
+        }
+    }
+}</code></pre>
   </div>
 
   <div class="payload-tabs">

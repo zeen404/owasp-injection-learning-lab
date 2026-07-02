@@ -88,13 +88,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </p>
 
   <div class="cb">
-    <code><span style="color:#86efac">// ✅ SECURE CODE (PHP)</span>
+    <pre><code><span style="color:#86efac">// ✅ SECURE REQUEST HANDLER (PHP)</span>
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
 
-<span style="color:#86efac">// Whitelist: ยอมรับเฉพาะ a-z A-Z 0-9 _</span>
-if (!preg_match('/^[a-zA-Z0-9_]{1,50}$/', $username)) {
-    die("Invalid input — XPath injection blocked!");
-}
-$query = "//user[username='" . $username . "' and password='" . $password . "']";</code>
+    // ✅ ป้องกันโดยใช้ Whitelist regex validation ตรวจสอบอักขระ
+    if (!preg_match('/^[a-zA-Z0-9_]{1,50}$/', $username) ||
+        !preg_match('/^[a-zA-Z0-9_!@#$%^&*]{1,100}$/', $password)) {
+        $blocked   = true;
+        $block_msg = "❌ Input ถูก block! Username หรือ Password มีอักขระพิเศษที่ไม่อนุญาต";
+    } else {
+        $xml = simplexml_load_file('/var/www/html/users.xml');
+        // ✅ ปลอดภัยเนื่องจากข้อมูลที่กรองแล้วเท่านั้นที่สามารถนำมาสร้าง Query ได้
+        $query = "//user[username='" . $username . "' and password='" . $password . "']";
+        $nodes = @$xml->xpath($query);
+        $result = ($nodes !== false) ? $nodes : [];
+    }
+}</code></pre>
   </div>
 
   <form method="POST" action="/secure.php">

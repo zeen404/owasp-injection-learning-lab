@@ -68,11 +68,20 @@ VULN_PAGE = STYLE + """
     ทำให้ผู้โจมตีรัน Python code บนเซิร์ฟเวอร์ได้ (RCE)
   </p>
   <div class="cb">
-    <code><span class="hl"># ❌ VULNERABLE CODE (Python Flask)</span>
-name = request.form['name']
-<span class="hl"># ← user input เข้า template string โดยตรง!</span>
-return render_template_string(f"Hello {name}!")
-<span class="hl"># ← Jinja2 evaluate {{7*7}} → 49, {{config}} → รั่ว secrets!</span></code>
+    <pre><code><span class="hl"># ❌ VULNERABLE ROUTE FUNCTION (Flask)</span>
+@app.route("/vulnerable", methods=["GET", "POST"])
+def vulnerable():
+    rendered, error, name = None, None, ""
+    if request.method == "POST":
+        name = request.form.get("name", "")
+        if name:
+            try:
+                # ❌ สลัก user input (name) ลงใน template string ตรงๆ ผ่าน f-string
+                template_str = f"Hello {name}! ยินดีต้อนรับสู่ SSTI Lab 🧩"
+                rendered = render_template_string(template_str)
+            except Exception as e:
+                error = f"Template Error: {str(e)}"
+    return render_template_string(VULN_PAGE, ...)</code></pre>
   </div>
   <form method="POST">
     <label>ชื่อของคุณ:</label>
@@ -113,15 +122,23 @@ SECURE_PAGE = STYLE + """
     และใช้ template variable แทน f-string — Jinja2 จะ render input เป็น text ไม่ใช่ expression
   </p>
   <div class="cb">
-    <code><span style="color:#86efac"># ✅ SECURE CODE (Python Flask)</span>
-from markupsafe import escape
-
-name = request.form['name']
-<span style="color:#86efac"># ← escape converts {{ to &#123;&#123; — ไม่ถูก evaluate</span>
-safe_name = escape(name)
-
-<span style="color:#86efac"># ส่งเป็น template variable — Jinja2 auto-escape</span>
-return render_template_string("Hello {{ name }}!", name=safe_name)</code>
+    <pre><code><span style="color:#86efac"># ✅ SECURE ROUTE FUNCTION (Flask)</span>
+@app.route("/secure", methods=["GET", "POST"])
+def secure():
+    rendered, error, name = None, None, ""
+    if request.method == "POST":
+        name = request.form.get("name", "")
+        if name:
+            try:
+                # ✅ ปลอดภัยโดยการเรียกใช้ escape() และส่งข้อมูลผ่าน Template context parameter
+                safe_name = escape(name)
+                rendered = render_template_string(
+                    "Hello {{ name }}! ยินดีต้อนรับสู่ SSTI Lab 🧩",
+                    name=safe_name
+                )
+            except Exception as e:
+                error = f"Error: {str(e)}"
+    return render_template_string(SECURE_PAGE, ...)</code></pre>
   </div>
   <form method="POST">
     <label>ชื่อของคุณ:</label>

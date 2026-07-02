@@ -103,9 +103,12 @@ if (file_exists($stored_file)) {
     </p>
 
     <div class="code-block">
-      <code><span class="highlight"># ❌ VULNERABLE CODE (PHP)</span>
-echo "Hello, " . $_GET['name'] . "!";
-<span class="highlight">// ↑ อันตราย! พ่นค่าดิบออกจอเบราว์เซอร์ตรงๆ</span></code>
+      <pre><code><span class="highlight">// ❌ VULNERABLE REFLECTED XSS (PHP)</span>
+$reflected_name = $_GET['name'] ?? '';
+if ($reflected_name !== '') {
+    // ❌ แสดงข้อมูลดิบที่ส่งเข้ามาทาง URL Query String ตรงๆ โดยไม่มีการดัดแปลงหรือ escape
+    echo "สวัสดีคุณ: " . $reflected_name;
+}</code></pre>
     </div>
 
     <form method="GET" action="/vulnerable.php">
@@ -148,11 +151,12 @@ echo "Hello, " . $_GET['name'] . "!";
     </p>
 
     <div class="code-block">
-      <code><span class="highlight"># ❌ VULNERABLE CODE (PHP)</span>
-foreach ($comments as $comment) {
-    echo "&lt;div&gt;" . $comment['text'] . "&lt;/div&gt;";
-}
-<span class="highlight">// ↑ อันตราย! สคริปต์ที่บันทึกไว้จะทำงานทุกครั้งที่คนมาเปิดหน้าเว็บ</span></code>
+      <pre><code><span class="highlight">// ❌ VULNERABLE STORED XSS (PHP)</span>
+// ดึงข้อมูลที่บันทึกจากไฟล์หรือ Database แล้วนำมาเรนเดอร์ลงในหน้าจอตรงๆ
+foreach ($comments as $index => $c) {
+    // ❌ เรนเดอร์ความคิดเห็นโดยไม่ได้เรียกใช้ฟังก์ชันป้องกัน ส่งผลให้สคริปต์ที่แฝงอยู่ทำงาน
+    echo '&lt;div class="comment-text"&gt;' . $c['text'] . '&lt;/div&gt;';
+}</code></pre>
     </div>
 
     <form method="POST" action="/vulnerable.php">

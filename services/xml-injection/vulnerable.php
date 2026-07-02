@@ -105,12 +105,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </p>
 
   <div class="cb">
-    <code><span class="hl">// ❌ VULNERABLE CODE (PHP)</span>
-$dom = new DOMDocument();
-$dom->loadXML(
-    $xml_input,
-    LIBXML_NOENT | LIBXML_DTDLOAD  <span class="hl">// ← enable external entities!</span>
-);</code>
+    <pre><code><span class="hl">// ❌ VULNERABLE REQUEST HANDLER (PHP)</span>
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $xml_in = $_POST['xml_input'] ?? '';
+
+    if (!empty($xml_in)) {
+        libxml_use_internal_errors(true);
+        $dom = new DOMDocument();
+        
+        // ❌ โหลด XML โดยเปิด Flag NOENT และ DTDLOAD ทำให้อนุญาตการเรียกใช้ External Entity (XXE)
+        $dom->loadXML(
+            $xml_in,
+            LIBXML_NOENT | LIBXML_DTDLOAD
+        );
+        
+        $errors = libxml_get_errors();
+        libxml_clear_errors();
+        
+        if (!empty($errors)) {
+            $error = 'XML Parse Error: ' . $errors[0]->message;
+        } else {
+            $output = $dom->saveXML();
+        }
+    }
+}</code></pre>
   </div>
 
   <div class="hint-box">

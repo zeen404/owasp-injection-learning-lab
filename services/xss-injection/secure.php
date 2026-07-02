@@ -106,9 +106,12 @@ if (file_exists($stored_file)) {
     </p>
 
     <div class="code-block">
-      <code><span class="highlight"># 🟢 SECURE CODE (PHP)</span>
-echo "Hello, " . htmlspecialchars($_GET['name'], ENT_QUOTES, 'UTF-8') . "!";
-<span class="highlight">// ↑ ปลอดภัย! มีการทำ Output Encoding ก่อนแสดงผลเสมอ</span></code>
+      <pre><code><span class="highlight">// 🟢 SECURE REFLECTED XSS (PHP)</span>
+$reflected_name = $_GET['name'] ?? '';
+if ($reflected_name !== '') {
+    // 🟢 ป้องกันโดยการครอบด้วยฟังก์ชัน htmlspecialchars() เสมอก่อนแสดงผลออกหน้าเว็บ
+    echo "สวัสดีคุณ: " . htmlspecialchars($reflected_name, ENT_QUOTES, 'UTF-8');
+}</code></pre>
     </div>
 
     <form method="GET" action="/secure.php">
@@ -149,11 +152,14 @@ echo "Hello, " . htmlspecialchars($_GET['name'], ENT_QUOTES, 'UTF-8') . "!";
     </p>
 
     <div class="code-block">
-      <code><span class="highlight"># 🟢 SECURE CODE (PHP)</span>
-foreach ($comments as $comment) {
-    echo "&lt;div&gt;" . htmlspecialchars($comment['text'], ENT_QUOTES, 'UTF-8') . "&lt;/div&gt;";
-}
-<span class="highlight">// ↑ ปลอดภัย! กรองก่อนแสดงผล ทำให้สคริปต์แปลกปลอมทำงานไม่ได้</span></code>
+      <pre><code><span class="highlight">// 🟢 SECURE STORED XSS (PHP)</span>
+// ดึงข้อมูลความคิดเห็นที่บันทึกไว้ในระบบขึ้นมาแสดงผล
+foreach ($comments as $index => $c) {
+    echo '&lt;div class="comment-text"&gt;';
+    // 🟢 ปลอดภัยโดยการครอบ htmlspecialchars() เพื่อเข้ารหัส HTML tag ทั้งหมดก่อนเรนเดอร์
+    echo htmlspecialchars($c['text'], ENT_QUOTES, 'UTF-8');
+    echo '&lt;/div&gt;';
+}</code></pre>
     </div>
 
     <form method="POST" action="/secure.php">

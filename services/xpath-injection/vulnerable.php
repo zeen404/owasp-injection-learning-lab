@@ -94,10 +94,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </p>
 
   <div class="cb">
-    <code><span class="hl">// ❌ VULNERABLE CODE (PHP)</span>
-$query = "//user[username='" . $username . "' and password='" . $password . "']";
-$nodes = $xml->xpath($query);
-<span class="hl">// ← username=' or '1'='1 → query กลายเป็น always-true!</span></code>
+    <pre><code><span class="hl">// ❌ VULNERABLE REQUEST HANDLER (PHP)</span>
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
+
+    if ($username !== '' || $password !== '') {
+        $xml = simplexml_load_file('/var/www/html/users.xml');
+        
+        // ❌ สร้าง XPath query โดยเอาค่า username และ password ที่ได้รับมาต่อสตริงโดยตรง
+        $query = "//user[username='" . $username . "' and password='" . $password . "']";
+        $nodes = @$xml->xpath($query);
+        // ... ประมวลผลลัพธ์การ Login
+    }
+}</code></pre>
   </div>
 
   <form method="POST" action="/vulnerable.php">

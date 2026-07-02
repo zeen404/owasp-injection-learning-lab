@@ -98,13 +98,27 @@ PAGE = """<!DOCTYPE html>
     <!-- Source Code Display -->
     <div class="code-block">
       {% if mode == 'VULNERABLE' %}
-        <code><span class="highlight"># ❌ VULNERABLE CODE</span>
-query = "SELECT * FROM users WHERE username='" + username + "'"
-cursor.execute(query)  <span class="highlight"># ← อันตราย! ไม่มี sanitization</span></code>
+        <pre><code><span class="highlight"># ❌ VULNERABLE FUNCTION</span>
+def run_query_vulnerable(username: str):
+    db = get_db()
+    cursor = db.cursor()
+    # ❌ อันตราย! ใช้ String Concatenation ต่อสตริง query ตรงๆ โดยไม่ผ่านการกรองข้อมูล
+    query = f"SELECT id, username, email, role, password FROM users WHERE username='{username}'"
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    db.close()
+    return rows, query</code></pre>
       {% else %}
-        <code><span style="color:#86efac"># ✅ SECURE CODE</span>
-query = "SELECT * FROM users WHERE username = %s"
-cursor.execute(query, (username,))  <span style="color:#86efac"># ← Parameterized: safe!</span></code>
+        <pre><code><span style="color:#86efac"># ✅ SECURE FUNCTION</span>
+def run_query_secure(username: str):
+    db = get_db()
+    cursor = db.cursor()
+    # ✅ ปลอดภัยด้วย Parameterized Query (ใช้ placeholder %s ส่งค่าแยกต่างหาก)
+    query = "SELECT id, username, email, role, password FROM users WHERE username = %s"
+    cursor.execute(query, (username,))
+    rows = cursor.fetchall()
+    db.close()
+    return rows, query</code></pre>
       {% endif %}
     </div>
 

@@ -109,10 +109,18 @@ app.get('/vulnerable', (req, res) => {
       เพื่อ bypass authentication ได้โดยไม่ต้องรู้ password
     </p>
     <div class="cb">
-      <code><span class="hl">// ❌ VULNERABLE CODE (Node.js)</span>
-const { username, password } = req.body;
-// ← ใช้ req.body โดยตรง ไม่มี validation!
-const user = await User.findOne({ username, password });</code>
+      <pre><code><span class="hl">// ❌ VULNERABLE ROUTE HANDLER (Express / Node.js)</span>
+app.post('/vulnerable/login', async (req, res) => {
+  let { username, password } = req.body;
+  
+  // ❌ แฮกเกอร์สามารถส่ง payload โครงสร้าง JSON object เข้ามาได้ตรงๆ
+  try { password = JSON.parse(password); } catch(e) {}
+  try { username = JSON.parse(username); } catch(e) {}
+
+  // ❌ ใส่ input ไปใน query โดยตรง ทำให้โดน operator injection (เช่น $gt, $ne)
+  const user = await User.findOne({ username, password });
+  // ... ประมวลผลลัพธ์
+});</code></pre>
     </div>
     <div class="json-hint">
       💡 ส่ง JSON body ผ่าน curl หรือ Postman:<br>
@@ -177,16 +185,20 @@ app.get('/secure', (req, res) => {
       ทำให้ MongoDB operator ใดๆ ใน input ถูก strip ออกก่อนเข้า query
     </p>
     <div class="cb">
-      <code><span style="color:#86efac">// ✅ SECURE CODE (Node.js)</span>
+      <pre><code><span style="color:#86efac">// ✅ SECURE ROUTE HANDLER (Express / Node.js)</span>
+app.post('/secure/login', async (req, res) => {
+  let { username, password } = req.body;
 
-<span style="color:#86efac">// Step 1: Type checking — ยอมรับ string เท่านั้น</span>
-if (typeof username !== 'string' || typeof password !== 'string') {
-  return res.status(400).json({ error: 'Invalid input type' });
-}
+  // ✅ ขั้นตอนที่ 1: ตรวจสอบประเภทข้อมูลของอินพุต ยอมรับเฉพาะ String เท่านั้น
+  if (typeof username !== 'string' || typeof password !== 'string') {
+    return res.status(400).send("Invalid input type");
+  }
 
-<span style="color:#86efac">// Step 2: mongo-sanitize — ลบ $ operators ออกทั้งหมด</span>
-const clean = sanitize({ username, password });
-const user = await User.findOne(clean);</code>
+  // ✅ ขั้นตอนที่ 2: ใช้ mongo-sanitize ลบ $ operators อัตโนมัติ ป้องกัน injection
+  const clean = sanitize({ username, password });
+  const user = await User.findOne(clean);
+  // ... ประมวลผลลัพธ์
+});</code></pre>
     </div>
     <form method="POST" action="/secure/login" id="sec-form">
       <label>Username:</label>

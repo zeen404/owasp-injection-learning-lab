@@ -85,10 +85,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- ❌ Vulnerable Source Code -->
     <div class="code-block">
-      <code><span class="highlight"># ❌ VULNERABLE CODE (PHP)</span>
-$command = "ping -c 3 " . $ip . " 2>&1";
-$output  = shell_exec($command);
-<span class="highlight">// ↑ อันตราย! ไม่มี sanitization — input เข้า shell โดยตรง</span></code>
+      <pre><code><span class="highlight">// ❌ VULNERABLE REQUEST HANDLER (PHP)</span>
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $ip = $_POST['ip'] ?? '';
+
+    if (!empty($ip)) {
+        // ❌ ต่อสายสตริงเพื่อรันคำสั่งโดยตรง ทำให้โดน OS Command Injection ได้ง่าย
+        $command = "ping -c 3 " . $ip . " 2>&1";
+        $output  = shell_exec($command);
+
+        if ($output === null) {
+            $error = 'Command execution failed.';
+        }
+    }
+}</code></pre>
     </div>
 
     <form method="POST" action="/vulnerable.php">
