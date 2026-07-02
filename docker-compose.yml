@@ -1,0 +1,217 @@
+version: '3.9'
+
+networks:
+  injection-lab:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  mongo-data:
+  ldap-data:
+  ldap-config:
+
+services:
+
+  # ─────────────────────────────────────────────────────────────────
+  #  DATABASES
+  # ─────────────────────────────────────────────────────────────────
+
+  mysql:
+    image: mysql:8.0
+    container_name: lab-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: labdb
+      MYSQL_USER: labuser
+      MYSQL_PASSWORD: labpassword
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - injection-lab
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mongodb:
+    image: mongo:7
+    container_name: lab-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: adminpassword
+      MONGO_INITDB_DATABASE: labdb
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - injection-lab
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  openldap:
+    image: osixia/openldap:1.5.0
+    container_name: lab-openldap
+    restart: unless-stopped
+    environment:
+      LDAP_ORGANISATION: "Injection Lab"
+      LDAP_DOMAIN: "lab.local"
+      LDAP_ADMIN_PASSWORD: "adminpassword"
+      LDAP_CONFIG_PASSWORD: "configpassword"
+      LDAP_READONLY_USER: "true"
+      LDAP_READONLY_USER_USERNAME: "readonly"
+      LDAP_READONLY_USER_PASSWORD: "readonlypassword"
+    volumes:
+      - ldap-data:/var/lib/ldap
+      - ldap-config:/etc/ldap/slapd.d
+      - ./database/ldap/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/bootstrap.ldif
+    command: --loglevel warning --copy-service
+    networks:
+      - injection-lab
+
+  # ─────────────────────────────────────────────────────────────────
+  #  DASHBOARD
+  # ─────────────────────────────────────────────────────────────────
+
+  dashboard:
+    image: nginx:alpine
+    container_name: lab-dashboard
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./dashboard:/usr/share/nginx/html:ro
+      - ./dashboard/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - injection-lab
+
+  # ─────────────────────────────────────────────────────────────────
+  #  SERVICE 1: SQL INJECTION (Python Flask)
+  # ─────────────────────────────────────────────────────────────────
+
+  sql-injection:
+    build: ./services/sql-injection
+    container_name: lab-sql-injection
+    restart: unless-stopped
+    ports:
+      - "5001:5000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: labuser
+      DB_PASSWORD: labpassword
+      DB_NAME: labdb
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - injection-lab
+
+  # ─────────────────────────────────────────────────────────────────
+  #  SERVICE 2: COMMAND INJECTION (PHP)
+  # ─────────────────────────────────────────────────────────────────
+
+  cmd-injection:
+    build: ./services/cmd-injection
+    container_name: lab-cmd-injection
+    restart: unless-stopped
+    ports:
+      - "5002:80"
+    networks:
+      - injection-lab
+
+  # ─────────────────────────────────────────────────────────────────
+  #  SERVICE 3: NOSQL INJECTION (Node.js + MongoDB)
+  # ─────────────────────────────────────────────────────────────────
+
+  nosql-injection:
+    build: ./services/nosql-injection
+    container_name: lab-nosql-injection
+    restart: unless-stopped
+    ports:
+      - "5003:3000"
+    environment:
+      MONGO_URL: mongodb://admin:adminpassword@mongodb:27017/labdb?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - injection-lab
+
+  # ─────────────────────────────────────────────────────────────────
+  #  SERVICE 4: LDAP INJECTION (Python Flask)
+  # ─────────────────────────────────────────────────────────────────
+
+  ldap-injection:
+    build: ./services/ldap-injection
+    container_name: lab-ldap-injection
+    restart: unless-stopped
+    ports:
+      - "5004:5000"
+    environment:
+      LDAP_HOST: openldap
+      LDAP_PORT: "389"
+      LDAP_BASE_DN: "dc=lab,dc=local"
+      LDAP_BIND_DN: "cn=readonly,dc=lab,dc=local"
+      LDAP_BIND_PW: "readonlypassword"
+    depends_on:
+      - openldap
+    networks:
+      - injection-lab
+
+  # ─────────────────────────────────────────────────────────────────
+  #  SERVICE 5: XPATH INJECTION (PHP)
+  # ─────────────────────────────────────────────────────────────────
+
+  xpath-injection:
+    build: ./services/xpath-injection
+    container_name: lab-xpath-injection
+    restart: unless-stopped
+    ports:
+      - "5005:80"
+    networks:
+      - injection-lab
+
+  # ─────────────────────────────────────────────────────────────────
+  #  SERVICE 6: TEMPLATE INJECTION / SSTI (Python Flask)
+  # ─────────────────────────────────────────────────────────────────
+
+  template-injection:
+    build: ./services/template-injection
+    container_name: lab-template-injection
+    restart: unless-stopped
+    ports:
+      - "5006:5000"
+    networks:
+      - injection-lab
+
+  # ─────────────────────────────────────────────────────────────────
+  #  SERVICE 7: XML INJECTION / XXE (PHP)
+  # ─────────────────────────────────────────────────────────────────
+
+  xml-injection:
+    build: ./services/xml-injection
+    container_name: lab-xml-injection
+    restart: unless-stopped
+    ports:
+      - "5007:80"
+    networks:
+      - injection-lab
+
+  # ─────────────────────────────────────────────────────────────────
+  #  SERVICE 8: XSS INJECTION (PHP)
+  # ─────────────────────────────────────────────────────────────────
+
+  xss-injection:
+    build: ./services/xss-injection
+    container_name: lab-xss-injection
+    restart: unless-stopped
+    ports:
+      - "5008:80"
+    networks:
+      - injection-lab
+

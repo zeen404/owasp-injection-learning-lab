@@ -1,0 +1,348 @@
+/* ═══════════════════════════════════════════════════════════════
+   OWASP A05 Injection Lab — Universal Service Theme (Light/Dark)
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Premium Dark Mode (Default) Variables */
+  --bg-deep:            #060813;       /* Deeper midnight navy */
+  --bg-surface:         rgba(15, 23, 42, 0.65); /* Sleek translucent glassmorphic slate */
+  --border-subtle:      rgba(255, 255, 255, 0.05);
+  --border-medium:      rgba(255, 255, 255, 0.12);
+  
+  --text-primary:       #f8fafc;       /* Bright slate off-white */
+  --text-secondary:     #94a3b8;       /* Saturated cool gray */
+  
+  --bg-input:           rgba(2, 4, 12, 0.7);   /* Rich dark input bg */
+  --border-input:       rgba(255, 255, 255, 0.08);
+  --border-input-focus: #6366f1;       /* Indigo glow */
+  --shadow-input-focus: rgba(99, 102, 241, 0.25);
+  
+  --bg-code:            rgba(2, 4, 12, 0.6);
+  --text-code:          #38bdf8;       /* Glowing cyan */
+  
+  --bg-res:             rgba(2, 4, 12, 0.5);
+  --border-res:         rgba(255, 255, 255, 0.04);
+  
+  /* Badges (Vulnerable / Secure states) */
+  --badge-vuln-bg:      rgba(244, 63, 94, 0.08);
+  --badge-vuln-color:   #fda4af;
+  --badge-vuln-border:  rgba(244, 63, 94, 0.25);
+  
+  --badge-sec-bg:       rgba(16, 185, 129, 0.08);
+  --badge-sec-color:    #6ee7b7;
+  --badge-sec-border:   rgba(16, 185, 129, 0.25);
+  
+  /* Accent Gradients & Links */
+  --accent-color:       #6366f1;
+  --accent-gradient:    linear-gradient(135deg, #6366f1, #8b5cf6);
+  --link-color:         #818cf8;
+  --link-hover:         #a5b4fc;
+}
+
+:root[data-theme="light"] {
+  /* Premium World-Class Light Mode Variables */
+  --bg-deep:            #f8fafc;       /* Very soft slate white */
+  --bg-surface:         #ffffff;       /* Pure white card face */
+  --border-subtle:      #e2e8f0;       /* Fine slate-200 border */
+  --border-medium:      #cbd5e1;       /* Slate-300 border */
+  
+  --text-primary:       #0f172a;       /* Saturated dark slate 900 */
+  --text-secondary:     #475569;       /* Slate-600 */
+  
+  --bg-input:           #ffffff;
+  --border-input:       #cbd5e1;
+  --border-input-focus: #4f46e5;
+  --shadow-input-focus: rgba(79, 70, 229, 0.15);
+  
+  --bg-code:            #f1f5f9;
+  --text-code:          #0284c7;       /* Ocean blue 700 */
+  
+  --bg-res:             #f8fafc;
+  --border-res:         #e2e8f0;
+  
+  /* Badges (Vulnerable / Secure states) */
+  --badge-vuln-bg:      #fef2f2;       /* Rose-50 */
+  --badge-vuln-color:   #e11d48;       /* Rose-600 */
+  --badge-vuln-border:  #fecdd3;       /* Rose-200 */
+  
+  --badge-sec-bg:       #f0fdf4;       /* Emerald-50 */
+  --badge-sec-color:    #16a34a;       /* Emerald-600 */
+  --badge-sec-border:   #bbf7d0;       /* Emerald-200 */
+  
+  /* Accent Gradients & Links */
+  --accent-color:       #4f46e5;
+  --accent-gradient:    linear-gradient(135deg, #4f46e5, #7c3aed);
+  --link-color:         #4f46e5;
+  --link-hover:         #3730a3;
+}
+
+:root[data-theme="lumio"] {
+  /* Premium Lumio Mode Variables */
+  --bg-deep:            #1b140b;       /* Warm cocoa deep bg */
+  --bg-surface:         rgba(40, 31, 19, 0.75); /* Translucent cocoa glass */
+  --border-subtle:      rgba(211, 175, 134, 0.08);
+  --border-medium:      rgba(211, 175, 134, 0.16);
+  
+  --text-primary:       #f5ebd9;       /* Cream foreground */
+  --text-secondary:     #c2a383;       /* Warm sand secondary */
+  
+  --bg-input:           rgba(27, 20, 11, 0.8);
+  --border-input:       rgba(211, 175, 134, 0.15);
+  --border-input-focus: #f79a32;
+  --shadow-input-focus: rgba(247, 154, 50, 0.25);
+  
+  --bg-code:            rgba(27, 20, 11, 0.7);
+  --text-code:          #8ab1b0;       /* Luminous warm teal */
+  
+  --bg-res:             rgba(27, 20, 11, 0.6);
+  --border-res:         rgba(211, 175, 134, 0.06);
+  
+  /* Badges (Vulnerable / Secure states) */
+  --badge-vuln-bg:      rgba(220, 57, 88, 0.08);
+  --badge-vuln-color:   #ff9ea8;
+  --badge-vuln-border:  rgba(220, 57, 88, 0.25);
+  
+  --badge-sec-bg:       rgba(136, 155, 74, 0.08);
+  --badge-sec-color:    #c5d886;
+  --badge-sec-border:   rgba(136, 155, 74, 0.25);
+  
+  /* Accent Gradients & Links */
+  --accent-color:       #f79a32;
+  --accent-gradient:    linear-gradient(135deg, #f79a32, #dc3958);
+  --link-color:         #8ab1b0;
+  --link-hover:         #a6cdcc;
+}
+
+/* ─── Base Overrides ─── */
+body {
+  background-color: var(--bg-deep) !important;
+  color: var(--text-primary) !important;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  font-size: 16px !important;
+}
+
+.header {
+  background: var(--bg-surface) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-subtle) !important;
+}
+
+.card {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:root[data-theme="light"] .card {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+}
+
+.desc, p {
+  color: var(--text-secondary) !important;
+  font-size: 15.5px !important;
+}
+
+label {
+  color: var(--text-secondary) !important;
+  font-size: 14.5px !important;
+}
+
+input[type=text], input[type=password], textarea {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-input) !important;
+  color: var(--text-primary) !important;
+  border-radius: 8px !important;
+  font-size: 15px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+input[type=text]:focus, input[type=password]:focus, textarea:focus {
+  border-color: var(--border-input-focus) !important;
+  box-shadow: 0 0 0 3px var(--shadow-input-focus) !important;
+}
+
+input[type=text]::placeholder, input[type=password]::placeholder, textarea::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 0.5;
+}
+
+/* ─── Buttons & Actions ─── */
+button, .pt {
+  background: var(--accent-gradient) !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: 8px !important;
+}
+button:hover, .pt:hover {
+  opacity: 0.9 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25) !important;
+}
+button:active, .pt:active {
+  transform: translateY(0px) !important;
+}
+
+/* ─── Code Blocks ─── */
+.code-block, .cb {
+  background: var(--bg-code) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 8px !important;
+}
+
+code {
+  color: var(--text-code) !important;
+  font-size: 13.5px !important;
+}
+
+/* Hints */
+.payload-hint, .hint, .hint-box p {
+  font-size: 13px !important;
+  color: #fbbf24 !important; /* Soft warm amber in dark */
+}
+:root[data-theme="light"] .payload-hint, :root[data-theme="light"] .hint, :root[data-theme="light"] .hint-box p {
+  color: #b45309 !important; /* Darker amber in light */
+}
+
+/* ─── Badges (Vulnerable / Secure status markers) ─── */
+.mode-badge, .mb, .vuln, .sec, .vuln-badge, .sec-badge {
+  padding: 4px 12px !important;
+  border-radius: 100px !important;
+  font-weight: 700 !important;
+  display: inline-block !important;
+  font-size: 13.5px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Red / Vulnerable badge state mapping */
+.vuln-badge, .vuln, .mode-badge:not(.sec-badge):not(.sec), .mb:not(.sec-badge):not(.sec) {
+  background: var(--badge-vuln-bg) !important;
+  color: var(--badge-vuln-color) !important;
+  border: 1px solid var(--badge-vuln-border) !important;
+}
+
+/* Green / Secure badge state mapping */
+.sec-badge, .sec {
+  background: var(--badge-sec-bg) !important;
+  color: var(--badge-sec-color) !important;
+  border: 1px solid var(--badge-sec-border) !important;
+}
+
+/* ─── Links & Navigation ─── */
+.switch-link, .sw {
+  color: var(--link-color) !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  font-size: 14.5px !important;
+  transition: color 0.15s ease !important;
+}
+.switch-link:hover, .sw:hover {
+  color: var(--link-hover) !important;
+  text-decoration: underline !important;
+}
+
+.back-link, .bl {
+  color: var(--text-secondary) !important;
+  text-decoration: none !important;
+  font-size: 14.5px !important;
+  transition: color 0.15s ease !important;
+}
+.back-link:hover, .bl:hover {
+  color: var(--text-primary) !important;
+}
+
+/* ─── Result Blocks & Outputs ─── */
+.result, .res, .result-block, .qd {
+  background: var(--bg-res) !important;
+  border: 1px solid var(--border-res) !important;
+  border-radius: 10px !important;
+}
+
+.result-block h3, .result h3, .res h3, .blocked-box h3 {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  margin-bottom: 12px !important;
+  color: #a78bfa !important; /* Soft violet title */
+}
+:root[data-theme="light"] .result-block h3, :root[data-theme="light"] .result h3, :root[data-theme="light"] .res h3, :root[data-theme="light"] .blocked-box h3 {
+  color: #6d28d9 !important; /* Deep violet title */
+}
+
+.output, pre, .res-body, .blocked-msg, .filter-display, .json-hint, .qd {
+  font-size: 13.5px !important;
+  line-height: 1.6 !important;
+}
+
+/* ─── Errors & Secure Notes ─── */
+.error, .blocked {
+  background: var(--badge-vuln-bg) !important;
+  border: 1px solid var(--badge-vuln-border) !important;
+  color: var(--badge-vuln-color) !important;
+  font-size: 14.5px !important;
+}
+
+.secure-note, .sn {
+  background: var(--badge-sec-bg) !important;
+  border: 1px solid var(--badge-sec-border) !important;
+  color: var(--badge-sec-color) !important;
+  font-size: 14.5px !important;
+}
+
+/* ─── Tables ─── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: var(--bg-code) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-medium) !important;
+  font-size: 14px !important;
+}
+
+td {
+  border-bottom: 1px solid var(--border-subtle) !important;
+  color: var(--text-secondary) !important;
+  font-size: 14px !important;
+}
+
+/* ─── Theme Switcher Button ─── */
+.theme-btn {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-medium) !important;
+  border-radius: 8px !important;
+  width: 38px !important;
+  height: 38px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: var(--text-primary) !important;
+  font-size: 16px !important;
+  margin-left: auto !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+.theme-btn:hover {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-input-focus) !important;
+  transform: scale(1.05) !important;
+}
+
+.theme-icon-light { display: none; }
+.theme-icon-dark { display: none; }
+.theme-icon-lumio { display: none; }
+
+:root[data-theme="dark"] .theme-icon-dark { display: block !important; }
+:root[data-theme="light"] .theme-icon-light { display: block !important; }
+:root[data-theme="lumio"] .theme-icon-lumio { display: block !important; }

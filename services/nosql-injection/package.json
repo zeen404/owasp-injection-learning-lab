@@ -1,0 +1,14 @@
+{
+  "name": "nosql-injection-lab",
+  "version": "1.0.0",
+  "description": "NoSQL Injection Lab for OWASP A05 Learning",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "mongoose": "^8.4.1",
+    "mongo-sanitize": "^1.1.0"
+  }
+}

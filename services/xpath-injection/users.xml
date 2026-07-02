@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<users>
+  <user>
+    <username>admin</username>
+    <password>supersecret123!</password>
+    <email>admin@lab.local</email>
+    <role>administrator</role>
+    <secret>FLAG{xpath_injection_extracted_xml_data!}</secret>
+  </user>
+  <user>
+    <username>alice</username>
+    <password>alice_pass</password>
+    <email>alice@lab.local</email>
+    <role>user</role>
+    <secret>alice_secret_data</secret>
+  </user>
+  <user>
+    <username>bob</username>
+    <password>bob_pass</password>
+    <email>bob@lab.local</email>
+    <role>user</role>
+    <secret>bob_secret_data</secret>
+  </user>
+  <user>
+    <username>charlie</username>
+    <password>charlie_pass</password>
+    <email>charlie@lab.local</email>
+    <role>user</role>
+    <secret>charlie_secret_data</secret>
+  </user>
+</users>

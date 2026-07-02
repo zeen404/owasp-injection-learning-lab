@@ -1,0 +1,98 @@
+# Bootstrap LDAP directory for Injection Lab
+# This file seeds users into the OpenLDAP server
+
+dn: ou=users,dc=lab,dc=local
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=lab,dc=local
+objectClass: organizationalUnit
+ou: groups
+
+# ─── Users ───────────────────────────────────────────────
+
+dn: uid=admin,ou=users,dc=lab,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: admin
+sn: Administrator
+givenName: Admin
+cn: Admin User
+displayName: Admin User
+uidNumber: 1000
+gidNumber: 1000
+userPassword: supersecret123!
+gecos: Admin User
+loginShell: /bin/bash
+homeDirectory: /home/admin
+mail: admin@lab.local
+ou: administrators
+
+dn: uid=alice,ou=users,dc=lab,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: alice
+sn: Smith
+givenName: Alice
+cn: Alice Smith
+displayName: Alice Smith
+uidNumber: 1001
+gidNumber: 1001
+userPassword: alice_pass
+gecos: Alice Smith
+loginShell: /bin/bash
+homeDirectory: /home/alice
+mail: alice@lab.local
+ou: employees
+
+dn: uid=bob,ou=users,dc=lab,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: bob
+sn: Jones
+givenName: Bob
+cn: Bob Jones
+displayName: Bob Jones
+uidNumber: 1002
+gidNumber: 1002
+userPassword: bob_pass
+gecos: Bob Jones
+loginShell: /bin/bash
+homeDirectory: /home/bob
+mail: bob@lab.local
+ou: employees
+
+dn: uid=charlie,ou=users,dc=lab,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: charlie
+sn: Brown
+givenName: Charlie
+cn: Charlie Brown
+displayName: Charlie Brown
+uidNumber: 1003
+gidNumber: 1003
+userPassword: charlie_pass
+gecos: Charlie Brown
+loginShell: /bin/bash
+homeDirectory: /home/charlie
+mail: charlie@lab.local
+ou: employees
+
+# ─── Groups ──────────────────────────────────────────────
+
+dn: cn=admins,ou=groups,dc=lab,dc=local
+objectClass: groupOfNames
+cn: admins
+member: uid=admin,ou=users,dc=lab,dc=local
+
+dn: cn=employees,ou=groups,dc=lab,dc=local
+objectClass: groupOfNames
+cn: employees
+member: uid=alice,ou=users,dc=lab,dc=local
+member: uid=bob,ou=users,dc=lab,dc=local
+member: uid=charlie,ou=users,dc=lab,dc=local

