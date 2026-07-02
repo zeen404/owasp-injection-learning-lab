@@ -64,7 +64,7 @@ VULN_PAGE = STYLE + """
   <h2>🔴 Vulnerable: Greeting Card Generator</h2>
   <p class="desc">
     โค้ดนี้ใช้ <strong>render_template_string()</strong> กับ user input โดยตรง —
-    Jinja2 จะ <em>evaluate</em> ทุก expression ใน <code style="color:#f97316">{{ }}</code>
+    Jinja2 จะ <em>evaluate</em> ทุก expression ใน <code style="color:#f97316">{{ '{{ }}' }}</code>
     ทำให้ผู้โจมตีรัน Python code บนเซิร์ฟเวอร์ได้ (RCE)
   </p>
   <div class="cb">
@@ -158,7 +158,7 @@ def secure():
     <div class="res-body">{{ rendered }}</div>
   </div>
   <div class="sn">
-    🛡 <strong>markupsafe.escape()</strong> แปลง: <code>{{ }}</code> → <code>&amp;#123;&amp;#123; &amp;#125;&amp;#125;</code><br>
+    🛡 <strong>markupsafe.escape()</strong> แปลง: <code>{{ '{{ }}' }}</code> → <code>&amp;#123;&amp;#123; &amp;#125;&amp;#125;</code><br>
     Template variable <code>{{ name }}</code> ทำให้ Jinja2 render เป็น text เท่านั้น<br>
     ไม่ว่าจะใส่ SSTI payload อะไร ก็จะแสดงเป็น literal string
   </div>
