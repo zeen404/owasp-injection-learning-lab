@@ -26,7 +26,7 @@
 
 ```bash
 # 1. Clone หรือย้ายโฟลเดอร์เข้ามาในโปรเจกต์
-cd /home/zeen/Documents/Injection
+cd owasp-injection-learning-lab
 
 # 2. สร้างและเริ่มการทำงานของ Services ทั้งหมด (การสร้างครั้งแรกอาจใช้เวลา 3-5 นาที)
 docker-compose up --build -d
