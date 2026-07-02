@@ -1,4 +1,4 @@
-# 🛡️ OWASP A05: Injection Learning Lab
+# 🛡️ OWASP A05:2025 — Injection Learning Lab
 
 สภาพแวดล้อมการเรียนรู้และทดลองช่องโหว่ **Injection** แบบครบวงจร — จำลองโค้ดที่มีช่องโหว่ (Vulnerable) และแนวทางการแก้ไขที่ปลอดภัย (Secure)
 พัฒนาโดยใช้ภาษาที่หลากหลาย (Python, PHP, Node.js) และระบบฐานข้อมูลหลายประเภท (MySQL, MongoDB, OpenLDAP, XML)
@@ -143,7 +143,7 @@ Injection/
 ---
 
 ## 📖 แหล่งข้อมูลเพิ่มเติม (References)
-* [OWASP Top 10 A03:2021 - Injection](https://owasp.org/Top10/A03_2021-Injection/)
+* [OWASP Top 10:2025 - A05: Injection](https://owasp.org/Top10/)
 * [OWASP Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Injection_Prevention_Cheat_Sheet.html)
 * [OWASP SQL Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)
 * [OWASP XXE Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html)

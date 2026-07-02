@@ -1,6 +1,6 @@
 <?php
 /*
- * OWASP A03:2021 — XSS (Cross-Site Scripting) Lab (PHP)
+ * OWASP A05:2025 — XSS (Cross-Site Scripting) Lab (PHP)
  * ==========================================================
  * หน้านี้จำลองการป้องกันช่องโหว่ Reflected XSS และ Stored XSS
  *
