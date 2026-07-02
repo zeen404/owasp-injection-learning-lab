@@ -127,7 +127,7 @@ def run_query_secure(username: str):
       <input type="text" name="username" id="username-input"
              placeholder="{{ \"ลองใส่: ' OR '1'='1\" if mode == 'VULNERABLE' else 'alice' }}"
              value="{{ username or '' }}" />
-      <p class="payload-hint">💡 Payloads: <code>' OR '1'='1</code> | <code>' UNION SELECT 1,secret,3,4,5,6 FROM secrets-- </code> | <code>admin'--</code></p>
+      <p class="payload-hint">💡 Payloads: <code>' OR '1'='1</code> | <code>' UNION SELECT 1,secret,3,4,5 FROM secrets-- </code> | <code>admin'--</code></p>
       <button type="submit" id="search-btn">ค้นหา</button>
     </form>
 
