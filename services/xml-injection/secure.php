@@ -181,7 +181,7 @@ Blocked characters/keywords:
 
 <script>
 const payloads = {
-  xxe: `<?xml version="1.0" encoding="UTF-8"?>
+  xxe: `<?= '<?xml version="1.0" encoding="UTF-8"?>' ?>
 <!DOCTYPE data [
   <!ENTITY xxe SYSTEM "file:///etc/passwd">
 ]>
@@ -189,7 +189,7 @@ const payloads = {
   <item>Test</item>
   <note>&xxe;</note>
 </data>`,
-  normal: `<?xml version="1.0" encoding="UTF-8"?>
+  normal: `<?= '<?xml version="1.0" encoding="UTF-8"?>' ?>
 <order>
   <item>Widget A</item>
   <quantity>2</quantity>

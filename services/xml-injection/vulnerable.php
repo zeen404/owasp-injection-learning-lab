@@ -161,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <script>
 const payloads = {
-  passwd: `<?xml version="1.0" encoding="UTF-8"?>
+  passwd: `<?= '<?xml version="1.0" encoding="UTF-8"?>' ?>
 <!DOCTYPE data [
   <!ENTITY xxe SYSTEM "file:///etc/passwd">
 ]>
@@ -169,7 +169,7 @@ const payloads = {
   <item>Order #1234</item>
   <note>&xxe;</note>
 </data>`,
-  hosts: `<?xml version="1.0" encoding="UTF-8"?>
+  hosts: `<?= '<?xml version="1.0" encoding="UTF-8"?>' ?>
 <!DOCTYPE data [
   <!ENTITY xxe SYSTEM "file:///etc/hosts">
 ]>
@@ -177,7 +177,7 @@ const payloads = {
   <item>Order #5678</item>
   <note>&xxe;</note>
 </data>`,
-  normal: `<?xml version="1.0" encoding="UTF-8"?>
+  normal: `<?= '<?xml version="1.0" encoding="UTF-8"?>' ?>
 <order>
   <item>Widget A</item>
   <quantity>2</quantity>
