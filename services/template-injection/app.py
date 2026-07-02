@@ -145,6 +145,11 @@ def secure():
     <input type="text" name="name" id="ssti-sec-name"
            placeholder="ลองใส่: {{7*7}} หรือ {{config}}"
            value="{{ name or '' }}" />
+    <p class="hint">💡 Payloads:
+      <code style="color:#f97316">{{7*7}}</code> |
+      <code style="color:#f97316">{{config.items()}}</code> |
+      <code style="color:#f97316">{{request.application.__globals__}}</code>
+    </p>
     <button type="submit" id="ssti-sec-btn">✉️ สร้างการ์ด (Secure)</button>
   </form>
   {% if rendered %}

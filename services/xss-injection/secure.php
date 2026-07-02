@@ -119,6 +119,11 @@ if ($reflected_name !== '') {
       <input type="text" name="name" id="name-input"
              placeholder="ลองกรอก: <script>alert(1)</script>"
              value="<?= htmlspecialchars($reflected_name) ?>" />
+      <p class="payload-hint">
+        💡 Payloads:
+        <code style="color:#f97316">&lt;script&gt;alert('Reflected XSS')&lt;/script&gt;</code> |
+        <code style="color:#f97316">&lt;img src=x onerror=alert(1)&gt;</code>
+      </p>
       <br>
       <button type="submit" id="reflected-btn">👋 ส่งชื่อ</button>
     </form>
@@ -165,6 +170,11 @@ foreach ($comments as $index => $c) {
     <form method="POST" action="/secure.php">
       <label>แสดงความคิดเห็นของคุณ:</label>
       <textarea name="comment" id="comment-input" placeholder="พิมพ์ข้อความของคุณที่นี่..."></textarea>
+      <p class="payload-hint">
+        💡 Payloads:
+        <code style="color:#f97316">&lt;script&gt;alert('Stored XSS')&lt;/script&gt;</code> |
+        <code style="color:#f97316">&lt;iframe src="javascript:alert(1)" style="display:none"&gt;&lt;/iframe&gt;</code>
+      </p>
       <br>
       <button type="submit" id="stored-btn">💬 บันทึกข้อความ</button>
     </form>

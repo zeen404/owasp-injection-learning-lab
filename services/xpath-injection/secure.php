@@ -115,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label>Password:</label>
     <input type="text" name="password" id="xpath-sec-pass"
            placeholder="anything" />
+    <p class="hint">💡 Payloads: <code style="color:#f97316">' or '1'='1</code> | <code style="color:#f97316">admin' or '1'='1</code></p>
     <br>
     <button type="submit" id="login-xpath-sec-btn">🔒 Login (Secure)</button>
   </form>

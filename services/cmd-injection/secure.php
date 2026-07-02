@@ -128,6 +128,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <input type="text" name="ip" id="ip-input"
              placeholder="ลองใส่ payload: 127.0.0.1; cat /etc/passwd"
              value="<?= htmlspecialchars($ip) ?>" />
+      <p class="payload-hint">
+        💡 Payloads:
+        <code style="color:#f97316">127.0.0.1; cat /etc/passwd</code> |
+        <code style="color:#f97316">| whoami</code> |
+        <code style="color:#f97316">127.0.0.1 && id</code>
+      </p>
       <br>
       <button type="submit" id="ping-secure-btn">🚀 Ping (Secure)</button>
     </form>

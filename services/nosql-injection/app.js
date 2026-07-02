@@ -205,6 +205,7 @@ app.post('/secure/login', async (req, res) => {
       <input type="text" name="username" id="username-sec" placeholder='ลองใส่ {"$gt": ""}' />
       <label>Password:</label>
       <input type="text" name="password" id="password-sec" placeholder='ลองใส่ {"$ne": null}' />
+      <p class="hint">💡 Payloads: <code style="color:#f97316">{"$gt": ""}</code> | <code style="color:#f97316">{"$ne": null}</code> | <code style="color:#f97316">{"$regex": ".*"}</code></p>
       <br><button type="submit" id="login-sec-btn">🔒 Login (Secure)</button>
     </form>
   `));

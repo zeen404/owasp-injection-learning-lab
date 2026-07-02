@@ -149,9 +149,7 @@ def secure():
     <input type="text" name="username" id="username-ldap"
            placeholder="{{ \"ลองใส่: * หรือ *)(uid=*))(|(uid=*\" if mode=='VULNERABLE' else 'alice' }}"
            value="{{ username or '' }}" />
-    {% if mode == 'VULNERABLE' %}
-      <p class="hint">💡 Payloads: <code style="color:#f97316">*</code> (ดูทุกคน) | <code style="color:#f97316">admin)(&)</code> (bypass) | <code style="color:#f97316">*)(uid=*))(|(uid=*</code></p>
-    {% endif %}
+    <p class="hint">💡 Payloads: <code style="color:#f97316">*</code> (ดูทุกคน) | <code style="color:#f97316">admin)(&)</code> (bypass) | <code style="color:#f97316">*)(uid=*))(|(uid=*</code></p>
     <button type="submit" id="search-ldap-btn">🔍 ค้นหา</button>
   </form>
 
